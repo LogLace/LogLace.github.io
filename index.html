@@ -1,0 +1,1997 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loglace</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Rubik+Puddles&family=Rubik+Storm&display=swap');
+    @import url('https://cdn.rawgit.com/moonspam/NanumSquare/master/nanumsquare.css');
+
+    @font-face {
+      font-family: 'AdorableLady';
+      src: url('AdorableLady.ttf') format('truetype');
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Thin.woff2') format('woff2');
+      font-weight: 100;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraLight.woff2') format('woff2');
+      font-weight: 200;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Light.woff2') format('woff2');
+      font-weight: 300;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Medium.woff2') format('woff2');
+      font-weight: 500;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2') format('woff2');
+      font-weight: 600;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraBold.woff2') format('woff2');
+      font-weight: 800;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Black.woff2') format('woff2');
+      font-weight: 900;
+      font-display: swap;
+    }
+:root {
+      color-scheme: light;
+      --bg: #ffffff;
+      --panel: #ffffff;
+      --panel-soft: #f5f5f5;
+      --ink: #111111;
+      --muted: #666666;
+      --line: #dddddd;
+      --accent: #8a8a8a;
+      --accent-deep: #333333;
+      --button: #333333;
+      --button-ink: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg,#ffffff 0%,#f4f5f6 48%,#e9eaec 100%);
+      color: var(--ink);
+      font-family: "NanumSquare", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+    }
+
+    button, input, textarea, select { font: inherit; }
+
+    .app {
+      position: relative;
+      isolation: isolate;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(360px, 500px) minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: relative;
+      z-index: 3;
+      align-self: stretch;
+      min-height: 100vh;
+      overflow: visible;
+      padding: 22px;
+      background: rgba(255,255,255,0.95);
+      border-right: 1px solid var(--line);
+      box-shadow: 14px 0 36px rgba(0,0,0,0.07);
+    }
+
+    .sidebar::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: min(390px, 82%);
+      height: min(390px, 45vh);
+      pointer-events: none;
+      z-index: 0;
+      background-image: radial-gradient(circle, rgba(96,96,96,0.26) 1.25px, transparent 1.45px);
+      background-size: 14px 14px;
+      background-position: left bottom;
+      -webkit-mask-image: radial-gradient(circle at left bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.48) 44%, rgba(0,0,0,0) 76%);
+      mask-image: radial-gradient(circle at left bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.48) 44%, rgba(0,0,0,0) 76%);
+    }
+
+    .sidebar > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .workspace {
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+      padding: 22px 22px 22px 84px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 16px;
+      background-color: #f3f3f3;
+      background-image: radial-gradient(#d4d4d4 1px, transparent 1px);
+      background-size: 14px 14px;
+    }
+
+    h1 {
+      margin: 0 0 5px;
+      font-family: "Rubik Storm", "Rubik Puddles", system-ui;
+      font-size: 38px;
+      font-weight: 400;
+      font-style: normal;
+      letter-spacing: 0;
+      color: var(--accent-deep);
+    }
+
+    .lede {
+      margin: 0 0 20px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .editor-shell {
+      position: relative;
+      padding-right: 0;
+    }
+
+    .bookmark-tabs {
+      position: absolute;
+      top: 0;
+      right: -77px;
+      display: grid;
+      gap: 20px;
+      width: 54px;
+      margin: 0;
+      z-index: 4;
+    }
+
+    .bookmark-tab {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-left-color: #ffffff;
+      border-radius: 0 8px 8px 0;
+      padding: 6px 2px 6px 10px;
+      background: #eeeeee;
+      color: #555555;
+      box-shadow: 6px 4px 12px rgba(0,0,0,0.06);
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.15;
+      text-align: left;
+    }
+
+    .bookmark-tab.active {
+      border-left-color: var(--panel);
+      background: var(--panel);
+      color: var(--accent-deep);
+      transform: none;
+      box-shadow: 6px 4px 14px rgba(0,0,0,0.09);
+    }
+
+    .editor-panel { display: none; }
+    .editor-panel.active { display: block; }
+
+    .section {
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .section:first-of-type {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--accent-deep);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .compact-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .theme-groups {
+      display: grid;
+      gap: 14px;
+    }
+
+    .theme-group {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.58);
+      padding: 12px;
+    }
+
+    .theme-group-title {
+      margin: 0 0 10px;
+      color: var(--accent-deep);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .wide { grid-column: 1 / -1; }
+
+    .split-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .split-row textarea { min-height: 38px; }
+
+    .map-arrow {
+      align-self: end;
+      min-width: 28px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      color: var(--accent-deep);
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 10px 11px;
+      outline: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.12);
+    }
+
+    input[type="color"] {
+      width: 52px;
+      height: 28px;
+      padding: 3px;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      accent-color: var(--accent);
+    }
+
+    .check-field {
+      display: flex;
+      grid-template-columns: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .color-field {
+      grid-template-columns: auto 52px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .theme-json {
+      min-height: 150px;
+      font: 12px/1.55 Consolas, "Courier New", monospace;
+    }
+
+    .item-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .edit-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-soft);
+      padding: 12px;
+    }
+
+    .item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      color: #2f3a43;
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .icon-button {
+      min-height: 30px;
+      border-color: var(--line);
+      background: #ffffff;
+      color: var(--accent-deep);
+      padding: 4px 9px;
+      font-weight: 400;
+    }
+
+    .add-button {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .page-content { min-height: 150px; }
+
+    .hint {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .field-note {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      min-height: 40px;
+      border: 1px solid var(--button);
+      border-radius: 6px;
+      padding: 9px 12px;
+      background: var(--button);
+      color: var(--button-ink);
+      cursor: pointer;
+      font-weight: 400;
+    }
+
+    button.secondary {
+      background: #fafafa;
+      border-color: var(--line);
+      color: var(--accent-deep);
+    }
+
+    button:active { transform: translateY(1px); }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tabs {
+      display: inline-flex;
+      gap: 3px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: rgba(255,255,255,0.84);
+    }
+
+    .tab {
+      min-height: 34px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 7px 13px;
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg,#2f2f2f,#777777);
+      color: var(--button-ink);
+    }
+
+    .pane {
+      min-height: 0;
+      display: none;
+    }
+
+    .pane.active {
+      min-height: 0;
+      display: grid;
+    }
+
+    .preview-shell, .code-shell {
+      min-height: 0;
+      overflow: auto;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .preview-shell {
+      background: transparent;
+    }
+
+    .code-shell { background: transparent; }
+
+    .preview {
+      max-width: 750px;
+      min-height: 100%;
+      margin: 0 auto;
+      padding: 28px;
+      background: transparent;
+    }
+
+    .preview strong {
+      font-weight: 900;
+    }
+
+    .code-output {
+      width: 100%;
+      min-height: 100%;
+      border: 0;
+      border-radius: 0;
+      resize: none;
+      padding: 18px;
+      background: #ffffff;
+      color: #111111;
+      font: 12px/1.55 Consolas, "Courier New", monospace;
+      white-space: pre;
+    }
+
+    .status {
+      min-height: 18px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .app { display: block; }
+      .sidebar {
+        max-height: none;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .editor-shell { padding-right: 0; }
+      .bookmark-tabs {
+        position: static;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        width: 100%;
+        margin: 0 0 14px;
+      }
+      .bookmark-tab,
+      .bookmark-tab.active {
+        min-height: 38px;
+        border: 1px solid var(--line);
+        border-radius: 8px 8px 0 0;
+        padding: 7px 8px;
+        transform: none;
+        text-align: center;
+      }
+      .bookmark-tab:nth-child(n) { margin-top: 0; }
+      .workspace {
+        min-height: 80vh;
+        padding: 22px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .grid, .compact-grid, .split-row, .actions {
+        grid-template-columns: 1fr;
+      }
+      .bookmark-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .sidebar, .workspace { padding: 16px; }
+      .preview { padding: 18px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <aside class="sidebar">
+      <h1>Loglace</h1>
+      <p class="lede">헤더, 소개, 본문을 조립해 아카라이브용 인라인 HTML을 만듭니다.</p>
+
+      <div class="editor-shell">
+        <nav class="bookmark-tabs" aria-label="편집 구역">
+          <button class="bookmark-tab active" type="button" data-editor="themeEditor">테마</button>
+          <button class="bookmark-tab" type="button" data-editor="bgmEditor">BGM</button>
+          <button class="bookmark-tab" type="button" data-editor="headerEditor">헤더</button>
+          <button class="bookmark-tab" type="button" data-editor="introEditor">소개</button>
+          <button class="bookmark-tab" type="button" data-editor="replaceEditor">치환</button>
+          <button class="bookmark-tab" type="button" data-editor="bodyEditor">본문</button>
+        </nav>
+
+        <div id="headerEditor" class="editor-panel">
+          <section class="section">
+          <h2 class="section-title">헤더</h2>
+          <div class="grid">
+            <label class="check-field wide">
+              <input id="headerEnabled" type="checkbox">
+              헤더 사용
+            </label>
+            <label class="wide">헤더 이미지 URL
+              <input id="headerImageUrl" value="" placeholder="비워두면 단색 헤더로 출력" autocomplete="off">
+              <span class="field-note">//ac.namu.la/ 형식의 링크를 입력하세요.</span>
+            </label>
+            <label>제목
+              <input id="headerTitle" value="" autocomplete="off">
+            </label>
+            <label class="wide">타이틀 태그
+              <textarea id="headerTags" spellcheck="false" placeholder="#태그, 키워드"></textarea>
+            </label>
+            <label>모델명 태그
+              <select id="headerModelTag">
+                <option value="">사용 안 함</option>
+                <option value="Opus 4.6">Opus 4.6</option>
+                <option value="Opus 4.7">Opus 4.7</option>
+                <option value="Gemini 3.1 Pro">Gemini 3.1 Pro</option>
+                <option value="GPT-5.5">GPT-5.5</option>
+                <option value="GPT-5.4">GPT-5.4</option>
+                <option value="GPT-5.1">GPT-5.1</option>
+                <option value="custom">직접입력</option>
+              </select>
+            </label>
+            <label id="headerModelCustomField">모델명 직접입력
+              <input id="headerModelCustom" value="" autocomplete="off">
+            </label>
+            <label>프롬프트 링크
+              <input id="headerPromptLink" value="" placeholder="비워두면 링크 없는 #프롬프트" autocomplete="off">
+            </label>
+            <label>프롬프트 태그 텍스트
+              <input id="headerPromptText" value="" autocomplete="off">
+            </label>
+            <label>봇 링크
+              <input id="headerBotLink" value="" placeholder="비워두면 링크 없는 #봇" autocomplete="off">
+            </label>
+            <label>봇 태그 텍스트
+              <input id="headerBotText" value="" autocomplete="off">
+            </label>
+            <label>부제목
+              <input id="headerSubtitle" value="" autocomplete="off">
+            </label>
+            <label>작은 라벨
+              <input id="headerLabel" value="" autocomplete="off">
+            </label>
+            <label>글자 정렬
+              <select id="headerAlign">
+                <option value="center">가운데</option>
+                <option value="left" selected>왼쪽</option>
+                <option value="right">오른쪽</option>
+              </select>
+            </label>
+            <label id="titleModeField">헤더 제목 모드
+              <select id="titleMode">
+                <option value="light">라이트</option>
+                <option value="dark">다크</option>
+              </select>
+            </label>
+            <label class="color-field">헤더 제목색
+              <input id="headerTitleColor" type="color" value="#111111">
+            </label>
+          </div>
+          <p class="hint">헤더는 이미지 URL을 배경처럼 쓰고, 그 위에 라벨/제목/부제목을 얹습니다.</p>
+        </section>
+      </div>
+
+      <div id="themeEditor" class="editor-panel active">
+        <section class="section">
+          <h2 class="section-title">테마</h2>
+          <div class="grid">
+            <label class="wide">프리셋
+              <select id="themePreset">
+                <option value="monoPink" selected>Mono Pink</option>
+                <option value="classic">Classic Paper</option>
+                <option value="ink">Ink Wash</option>
+                <option value="midnight">Midnight Archive</option>
+                <option value="sepia">Sepia Novel</option>
+                <option value="sage">Sage Glass</option>
+                <option value="plum">Quiet Plum</option>
+                <option value="steel">Steel Blue</option>
+                <option value="mono">Warm Mono</option>
+                <option value="custom">Custom JSON</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">글꼴과 색상</h2>
+          <div class="theme-groups">
+            <div class="theme-group">
+              <h3 class="theme-group-title">글꼴</h3>
+              <div class="grid compact-grid">
+                <label class="wide">폰트
+                  <select id="fontFamily">
+                    <option value="">폰트 지정 안 함</option>
+                    <option value="'IBM Plex Sans KR','Apple SD Gothic Neo','Noto Sans KR',sans-serif">IBM Plex Sans KR</option>
+                    <option value="'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif">Noto Sans KR</option>
+                    <option value="'Noto Serif KR','Noto Serif CJK KR','Nanum Myeongjo',serif">Noto Serif Korean</option>
+                    <option value="'Nanum Myeongjo','Noto Serif KR',serif">Nanum Myeongjo</option>
+                    <option value="'Malgun Gothic','Apple SD Gothic Neo',sans-serif">Malgun Gothic</option>
+                    <option value="'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif">Pretendard</option>
+                  </select>
+                </label>
+                <label>대사 자간(px)
+                  <input id="speechLetterSpacing" type="number" min="-1" max="4" step="0.1" value="0">
+                </label>
+                <label>나레이션 자간(px)
+                  <input id="narrationLetterSpacing" type="number" min="-1" max="4" step="0.1" value="-0.5">
+                </label>
+              </div>
+            </div>
+
+            <div class="theme-group">
+              <h3 class="theme-group-title">기본 색</h3>
+              <div class="grid compact-grid">
+                <label class="color-field">박스 배경
+                  <input id="wrapperBg" type="color" value="#ffffff">
+                </label>
+                <label class="color-field">박스 글자
+                  <input id="wrapperText" type="color" value="#2c3e50">
+                </label>
+                <label class="color-field">본문
+                  <input id="bodyColor" type="color" value="#2c3e50">
+                </label>
+                <label class="color-field">이름
+                  <input id="nameColor" type="color" value="#828282">
+                </label>
+                <label class="color-field">포인트
+                  <input id="accentColor" type="color" value="#8c1e1e">
+                </label>
+              </div>
+            </div>
+
+            <div class="theme-group">
+              <h3 class="theme-group-title">대사와 인용</h3>
+              <div class="grid compact-grid">
+                <label class="color-field">속마음 배경
+                  <input id="thoughtBgColor" type="color" value="#edf6ff">
+                </label>
+                <label class="color-field">속마음 글자
+                  <input id="thoughtTextColor" type="color" value="#293742">
+                </label>
+                <label class="color-field">왼쪽 따옴표
+                  <input id="leftQuoteColor" type="color" value="#8c1e1e">
+                </label>
+                <label class="color-field">오른쪽 따옴표
+                  <input id="rightQuoteColor" type="color" value="#c8c8c8">
+                </label>
+              </div>
+            </div>
+
+            <div class="theme-group">
+              <h3 class="theme-group-title">박스와 그림자</h3>
+              <div class="grid compact-grid">
+                <label class="color-field">테두리
+                  <input id="wrapperBorderColor" type="color" value="#000000">
+                </label>
+                <label>테두리 투명도
+                  <input id="wrapperBorderOpacity" type="number" min="0" max="1" step="0.01" value="0.08">
+                </label>
+                <label class="color-field">그림자
+                  <input id="boxShadowColor" type="color" value="#000000">
+                </label>
+                <label>그림자 투명도
+                  <input id="boxShadowOpacity" type="number" min="0" max="1" step="0.01" value="0.14">
+                </label>
+              </div>
+            </div>
+
+            <div class="theme-group">
+              <h3 class="theme-group-title">이미지와 소개</h3>
+              <div class="grid compact-grid">
+                <label>덮개 시작 투명도
+                  <input id="imageOverlayStartOpacity" type="number" min="0" max="1" step="0.01" value="0.62">
+                </label>
+                <label>덮개 끝 투명도
+                  <input id="imageOverlayEndOpacity" type="number" min="0" max="1" step="0.01" value="0">
+                </label>
+                <label class="color-field">소개 이미지 그림자
+                  <input id="introImageShadowColor" type="color" value="#828282">
+                </label>
+                <label class="color-field">소개 태그 배경
+                  <input id="introTagBgColor" type="color" value="#edf6ff">
+                </label>
+                <label class="color-field">소개 태그 글자
+                  <input id="introTagTextColor" type="color" value="#828282">
+                </label>
+              </div>
+            </div>
+
+            <div class="theme-group">
+              <h3 class="theme-group-title">구분선과 BGM</h3>
+              <div class="grid compact-grid">
+                <label class="color-field">구분선 왼쪽
+                  <input id="dividerLeftColor" type="color" value="#828282">
+                </label>
+                <label class="color-field">구분선 오른쪽
+                  <input id="dividerRightColor" type="color" value="#8c1e1e">
+                </label>
+                <label class="color-field">BGM 라벨 글자
+                  <input id="bgmLabelTextColor" type="color" value="#ffffff">
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">커스텀 테마</h2>
+          <div class="grid">
+            <label class="wide">테마 이름
+              <input id="customThemeName" value="Custom Theme" autocomplete="off">
+            </label>
+            <label class="wide">테마 JSON
+              <textarea id="themeJson" class="theme-json" spellcheck="false" placeholder="내보내기를 누르면 현재 글꼴과 색상이 JSON으로 생성됩니다."></textarea>
+            </label>
+            <button id="exportThemeJson" class="secondary" type="button">JSON 내보내기</button>
+            <button id="importThemeJson" type="button">JSON 적용</button>
+            <button id="downloadThemeFile" class="secondary" type="button">테마 파일 저장</button>
+            <button id="loadThemeFile" type="button">테마 파일 불러오기</button>
+            <input id="themeFileInput" type="file" accept="application/json,.json" hidden>
+          </div>
+          <p class="hint">그림자, 이미지 덮개, 소개 이미지 장식까지 테마 JSON과 파일 저장에 포함됩니다.</p>
+        </section>
+      </div>
+
+      <div id="introEditor" class="editor-panel">
+        <section class="section">
+          <h2 class="section-title">캐릭터 소개</h2>
+          <div class="grid">
+            <label class="check-field wide">
+              <input id="introEnabled" type="checkbox" checked>
+              소개 사용
+            </label>
+            <div class="wide">
+              <div id="introItems" class="item-list"></div>
+              <button id="addIntro" class="secondary add-button" type="button">+ 캐릭터 추가</button>
+            </div>
+          </div>
+          <p class="hint">소개 박스는 하나로 생성되고, 각 캐릭터 항목은 박스 안에서 별도 정렬을 가질 수 있습니다.</p>
+        </section>
+      </div>
+
+      <div id="bgmEditor" class="editor-panel">
+        <section class="section">
+          <h2 class="section-title">BGM</h2>
+          <div class="grid compact-grid">
+            <label class="check-field wide">
+              <input id="bgmEnabled" type="checkbox">
+              BGM 사용
+            </label>
+            <label>BGM 라벨
+              <input id="bgmLabel" value="MUSIC" autocomplete="off">
+            </label>
+            <label>BGM 제목
+              <input id="bgmTitle" value="" autocomplete="off" placeholder="곡 제목 또는 분위기">
+            </label>
+            <label class="wide">BGM URL 또는 iframe 코드
+              <textarea id="bgmEmbed" spellcheck="false" placeholder="YouTube/SoundCloud URL 또는 iframe embed 코드"></textarea>
+            </label>
+            <label>너비(px)
+              <input id="bgmWidth" type="number" min="80" max="1000" step="1" value="420">
+            </label>
+            <label>높이(px)
+              <input id="bgmHeight" type="number" min="40" max="500" step="1" value="166">
+            </label>
+          </div>
+          <p class="hint">BGM은 소개 아래에 박스 없이 iframe만 출력합니다. 아카라이브에서 허용되는 임베드의 크기만 조절합니다.</p>
+        </section>
+      </div>
+
+      <div id="replaceEditor" class="editor-panel">
+        <section class="section">
+          <h2 class="section-title">치환</h2>
+          <div class="grid">
+            <label class="check-field wide">
+              <input id="replaceEnabled" type="checkbox" checked>
+              치환 사용
+            </label>
+            <div class="wide">
+              <div id="replaceRules" class="item-list"></div>
+              <button id="addReplace" class="secondary add-button" type="button">+ 치환 추가</button>
+            </div>
+          </div>
+          <p class="hint">원문을 HTML로 만들기 전에 특정 단어를 바꿉니다. 곡선 따옴표는 자동으로 직선 따옴표로 정리됩니다.</p>
+        </section>
+      </div>
+
+      <div id="bodyEditor" class="editor-panel">
+        <section class="section">
+          <h2 class="section-title">출력 모드와 화자</h2>
+          <div class="grid">
+            <label class="wide">출력 모드
+              <select id="contentMode">
+                <option value="dialogue">대화모드</option>
+                <option value="novel">소설모드</option>
+              </select>
+            </label>
+            <p class="hint wide">대화모드 사용시, 번역가의 노트에 {{char}}의 대사 앞에는 char: 을 기입하라는 프롬프트를 작성해두면 편해요.</p>
+            <label id="unknownSpeakerField" class="wide">목록에 없는 이름 처리
+              <select id="unknownSpeakerMode">
+                <option value="left">왼쪽 대사로 처리</option>
+                <option value="right">오른쪽 대사로 처리</option>
+              </select>
+            </label>
+            <label>접기 제목 모드
+              <select id="foldTitleMode">
+                <option value="light">라이트</option>
+                <option value="dark">다크</option>
+              </select>
+            </label>
+            <label class="color-field">접기 제목색
+              <input id="foldTitleColor" type="color" value="#828282">
+            </label>
+            <div id="speakerRulesField" class="wide">
+              <div id="speakerRules" class="item-list"></div>
+              <button id="addSpeaker" class="secondary add-button" type="button">+ 화자 추가</button>
+            </div>
+          </div>
+          <p class="hint">캡쳐 단어는 원문에서 <strong>딘아:</strong>처럼 콜론 앞에 오는 이름입니다. 이미지 URL은 비워둘 수 있고, 대화모드에서 왼쪽/오른쪽 배치 모두 표시됩니다.</p>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">원문</h2>
+          <div id="pageItems" class="item-list"></div>
+          <button id="addPage" class="secondary add-button" type="button">+ 페이지 추가</button>
+          <p class="hint">각 페이지 내용 형식은 <strong>이름: 내용</strong>입니다. 콜론이 없는 줄은 나레이션입니다.</p>
+          <div class="actions">
+            <button id="downloadHtml" class="secondary">파일 저장</button>
+          </div>
+          <div id="status" class="status" aria-live="polite"></div>
+        </section>
+      </div>
+      </div>
+    </aside>
+
+    <section class="workspace">
+      <div class="row">
+        <div class="tabs" aria-label="보기 전환">
+          <button class="tab active" type="button" data-pane="previewPane">미리보기</button>
+          <button class="tab" type="button" data-pane="codePane">HTML</button>
+        </div>
+        <button id="copyHtml" type="button">HTML 복사</button>
+      </div>
+
+      <div id="previewPane" class="pane active">
+        <div class="preview-shell">
+          <div id="preview" class="preview"></div>
+        </div>
+      </div>
+
+      <div id="codePane" class="pane">
+        <div class="code-shell">
+          <textarea id="htmlOutput" class="code-output" spellcheck="false"></textarea>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const themes = {
+      monoPink: {
+        titleMode: "light",
+        foldTitleMode: "light",
+        fontFamily: "'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif",
+        speechLetterSpacing: "0",
+        narrationLetterSpacing: "-0.2",
+        bodyColor: "#3a3638",
+        nameColor: "#8b8085",
+        thoughtBgColor: "#f5eef1",
+        thoughtTextColor: "#3a3638",
+        leftQuoteColor: "#c58a9b",
+        rightQuoteColor: "#cfc8cb",
+        wrapperBg: "#fbfafb",
+        wrapperText: "#343234",
+        accentColor: "#c58a9b",
+        wrapperBorderColor: "#d8d2d5",
+        wrapperBorderOpacity: "0.72",
+        boxShadowColor: "#000000",
+        boxShadowOpacity: "0.09",
+        imageOverlayStartOpacity: "0.64",
+        imageOverlayEndOpacity: "0",
+        introImageShadowColor: "#b99aa4",
+        introTagBgColor: "#f5eef1",
+        introTagTextColor: "#8b7079",
+        dividerLeftColor: "#b8b2b5",
+        dividerRightColor: "#c58a9b",
+        bgmLabelTextColor: "#ffffff"
+      },
+      classic: {
+        bodyColor: "#333331",
+        nameColor: "#7d7b76",
+        thoughtBgColor: "#efeeea",
+        thoughtTextColor: "#333331",
+        leftQuoteColor: "#6f6d68",
+        rightQuoteColor: "#bebbb3",
+        wrapperBg: "#fbfaf7",
+        wrapperText: "#333331",
+        accentColor: "#6f6d68"
+      },
+      ink: {
+        bodyColor: "#30383d",
+        nameColor: "#7f8d94",
+        thoughtBgColor: "#eef3f5",
+        thoughtTextColor: "#30383d",
+        leftQuoteColor: "#6f9fc0",
+        rightQuoteColor: "#b8c4ca",
+        wrapperBg: "#fbfcfd",
+        wrapperText: "#30383d",
+        accentColor: "#6f9fc0"
+      },
+      midnight: {
+        bodyColor: "#e8f0f5",
+        nameColor: "#9db4c3",
+        thoughtBgColor: "#2d3e4b",
+        thoughtTextColor: "#f5fbff",
+        leftQuoteColor: "#93c5e8",
+        rightQuoteColor: "#668394",
+        wrapperBg: "#1b252d",
+        wrapperText: "#e8f0f5",
+        accentColor: "#93c5e8"
+      },
+      sepia: {
+        bodyColor: "#463d36",
+        nameColor: "#97887d",
+        thoughtBgColor: "#f7eadf",
+        thoughtTextColor: "#463d36",
+        leftQuoteColor: "#c19a82",
+        rightQuoteColor: "#d2c0b2",
+        wrapperBg: "#fffdf9",
+        wrapperText: "#463d36",
+        accentColor: "#c19a82"
+      },
+      sage: {
+        bodyColor: "#33423d",
+        nameColor: "#849a91",
+        thoughtBgColor: "#eaf4ee",
+        thoughtTextColor: "#33423d",
+        leftQuoteColor: "#86b5a4",
+        rightQuoteColor: "#bacac3",
+        wrapperBg: "#fbfdfb",
+        wrapperText: "#33423d",
+        accentColor: "#86b5a4"
+      },
+      plum: {
+        bodyColor: "#f1e9f3",
+        nameColor: "#b9a5bf",
+        thoughtBgColor: "#382c3f",
+        thoughtTextColor: "#fbf5fc",
+        leftQuoteColor: "#c9a6d2",
+        rightQuoteColor: "#89758f",
+        wrapperBg: "#241d28",
+        wrapperText: "#f1e9f3",
+        accentColor: "#c9a6d2"
+      },
+      steel: {
+        bodyColor: "#eaf0f4",
+        nameColor: "#a8b5bf",
+        thoughtBgColor: "#3a454e",
+        thoughtTextColor: "#f8fbfd",
+        leftQuoteColor: "#9dbbd0",
+        rightQuoteColor: "#7c8d98",
+        wrapperBg: "#283038",
+        wrapperText: "#eaf0f4",
+        accentColor: "#9dbbd0"
+      },
+      mono: {
+        bodyColor: "#333739",
+        nameColor: "#828b90",
+        thoughtBgColor: "#eef0f1",
+        thoughtTextColor: "#333739",
+        leftQuoteColor: "#92aabc",
+        rightQuoteColor: "#c3ccd2",
+        wrapperBg: "#fbfbfb",
+        wrapperText: "#333739",
+        accentColor: "#92aabc"
+      }
+    };
+
+    const fields = [
+      "headerEnabled",
+      "headerImageUrl",
+      "headerTitle",
+      "headerTags",
+      "headerModelTag",
+      "headerModelCustom",
+      "headerPromptLink",
+      "headerPromptText",
+      "headerBotLink",
+      "headerBotText",
+      "headerSubtitle",
+      "headerLabel",
+      "headerAlign",
+      "titleMode",
+      "foldTitleMode",
+      "headerTitleColor",
+      "foldTitleColor",
+      "introEnabled",
+      "bgmEnabled",
+      "bgmLabel",
+      "bgmTitle",
+      "bgmEmbed",
+      "bgmWidth",
+      "bgmHeight",
+      "replaceEnabled",
+      "contentMode",
+      "unknownSpeakerMode",
+      "themePreset",
+      "fontFamily",
+      "speechLetterSpacing",
+      "narrationLetterSpacing",
+      "bodyColor",
+      "nameColor",
+      "thoughtBgColor",
+      "thoughtTextColor",
+      "leftQuoteColor",
+      "rightQuoteColor",
+      "wrapperBg",
+      "wrapperText",
+      "accentColor",
+      "wrapperBorderColor",
+      "wrapperBorderOpacity",
+      "boxShadowColor",
+      "boxShadowOpacity",
+      "imageOverlayStartOpacity",
+      "imageOverlayEndOpacity",
+      "introImageShadowColor",
+      "introTagBgColor",
+      "introTagTextColor",
+      "dividerLeftColor",
+      "dividerRightColor",
+      "bgmLabelTextColor"
+    ];
+
+    const themeKeys = [
+      "titleMode",
+      "foldTitleMode",
+      "headerTitleColor",
+      "foldTitleColor",
+      "fontFamily",
+      "speechLetterSpacing",
+      "narrationLetterSpacing",
+      "bodyColor",
+      "nameColor",
+      "thoughtBgColor",
+      "thoughtTextColor",
+      "leftQuoteColor",
+      "rightQuoteColor",
+      "wrapperBg",
+      "wrapperText",
+      "accentColor",
+      "wrapperBorderColor",
+      "wrapperBorderOpacity",
+      "boxShadowColor",
+      "boxShadowOpacity",
+      "imageOverlayStartOpacity",
+      "imageOverlayEndOpacity",
+      "introImageShadowColor",
+      "introTagBgColor",
+      "introTagTextColor",
+      "dividerLeftColor",
+      "dividerRightColor",
+      "bgmLabelTextColor"
+    ];
+
+    const completeThemeValues = (values = {}) => ({
+      ...values,
+      wrapperBorderColor: values.wrapperBorderColor ?? "#000000",
+      wrapperBorderOpacity: values.wrapperBorderOpacity ?? "0.08",
+      boxShadowColor: values.boxShadowColor ?? "#000000",
+      boxShadowOpacity: values.boxShadowOpacity ?? "0.14",
+      foldTitleMode: values.foldTitleMode ?? values.titleMode ?? "light",
+      imageOverlayStartOpacity: values.imageOverlayStartOpacity ?? "0.62",
+      imageOverlayEndOpacity: values.imageOverlayEndOpacity ?? "0",
+      introImageShadowColor: values.introImageShadowColor ?? values.nameColor ?? "#828282",
+      introTagBgColor: values.introTagBgColor ?? values.thoughtBgColor ?? "#edf6ff",
+      introTagTextColor: values.introTagTextColor ?? values.nameColor ?? "#828282",
+      dividerLeftColor: values.dividerLeftColor ?? values.nameColor ?? "#828282",
+      dividerRightColor: values.dividerRightColor ?? values.accentColor ?? "#8c1e1e",
+      bgmLabelTextColor: values.bgmLabelTextColor ?? "#ffffff"
+    });
+
+    const escapeHtml = (value) => String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+    const escapeCssUrl = (value) => String(value)
+      .replaceAll("\\", "\\\\")
+      .replaceAll('"', "%22")
+      .replaceAll("'", "%27")
+      .replaceAll(")", "%29");
+    const normalizeQuotes = (value) => String(value)
+      .replace(/[“”„‟]/g, '"')
+      .replace(/[‘’‚‛]/g, "'");
+    const formatInline = (value, settings, options = {}) => {
+      let html = escapeHtml(normalizeQuotes(value));
+      if (!options.disableMarkdownBold) {
+        html = html.replace(/\*\*([^*\n][^*\n]*?)\*\*/g, "<strong>$1</strong>");
+      }
+      html = html.replace(/\*([^\n*]+?)\*/g, "<em>$1</em>");
+      const smallQuoteStyle = `display:inline-block;padding:2px 8px;border-radius:7px;background:${settings.thoughtBgColor};color:${settings.thoughtTextColor};`;
+      const doubleQuoteStyle = `display:inline-block;padding:2px 8px;border-radius:7px;background:${settings.wrapperBg};color:${settings.accentColor};`;
+      html = html.replace(/&#39;([^<\n]+?)&#39;/g, `<span style="${smallQuoteStyle}">$1</span>`);
+      html = html.replace(/&quot;([^<\n]+?)&quot;/g, (match, quoteText) => {
+        const content = options.boldDoubleQuoteContent ? `<strong>${quoteText}</strong>` : quoteText;
+        return options.hideDoubleQuotes
+          ? `<span style="${doubleQuoteStyle}">${content}</span>`
+          : `<span style="${doubleQuoteStyle}">&quot;${content}&quot;</span>`;
+      });
+      return html;
+    };
+    const lineBreaks = (value, settings, options) => formatInline(value, settings, options).replace(/\n/g, "<br>");
+    const boldLineBreaks = (value, settings, options) => `<strong>${lineBreaks(value, settings, options)}</strong>`;
+    const checked = (id) => $(id).checked;
+    const fontStyle = (settings) => settings.fontFamily ? `font-family:${settings.fontFamily};` : "font-family:-apple-system,BlinkMacSystemFont,NanumBarunGothicOTF,NanumBarunGothic,system-ui,sans-serif;";
+    const normalizeImageUrl = (value) => {
+      const trimmed = String(value).trim();
+      return trimmed.startsWith("//") ? `https:${trimmed}` : trimmed;
+    };
+    const isImageUrl = (value) => /^https?:\/\//i.test(normalizeImageUrl(value));
+    const normalizeLinkUrl = (value) => {
+      const trimmed = String(value).trim();
+      if (!trimmed) return "";
+      if (trimmed.startsWith("//")) return `https:${trimmed}`;
+      if (/^https?:\/\//i.test(trimmed)) return trimmed;
+      return "";
+    };
+    const hiddenImage = (url) => url ? `<img style="width:0px;height:0px;" src="${escapeHtml(url)}" class="fr-fic fr-dii">` : "";
+    const clampNumber = (value, min, max, fallback) => {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return fallback;
+      return Math.min(max, Math.max(min, number));
+    };
+    const hexToRgb = (hex) => {
+      const normalized = String(hex || "").replace("#", "").trim();
+      const value = normalized.length === 3
+        ? normalized.split("").map((char) => char + char).join("")
+        : normalized;
+      if (!/^[\da-f]{6}$/i.test(value)) return { r: 0, g: 0, b: 0 };
+      return {
+        r: parseInt(value.slice(0, 2), 16),
+        g: parseInt(value.slice(2, 4), 16),
+        b: parseInt(value.slice(4, 6), 16)
+      };
+    };
+    const rgba = (hex, alpha) => {
+      const { r, g, b } = hexToRgb(hex);
+      return `rgba(${r},${g},${b},${clampNumber(alpha, 0, 1, 1)})`;
+    };
+    const titleLayerBackground = (url, settings, position = "center", mode = "light") => {
+      const overlayColor = mode === "dark" ? "#000000" : "#ffffff";
+      const overlay = `linear-gradient(90deg,${rgba(overlayColor, settings.imageOverlayStartOpacity)} 0%,${rgba(overlayColor, settings.imageOverlayEndOpacity)} 100%)`;
+      const fallback = `background:${settings.wrapperBg};`;
+      return url
+        ? `background-image:${overlay},url('${escapeCssUrl(url)}');background-color:${settings.wrapperBg};background-size:cover,cover;background-position:${position},${position};background-repeat:no-repeat,no-repeat;`
+        : fallback;
+    };
+
+    const fieldValue = (root, selector) => root.querySelector(selector)?.value.trim() || "";
+
+    const syncPageFoldControls = (item) => {
+      const foldEnabled = item.querySelector("[data-page-fold]")?.checked;
+      item.querySelectorAll("[data-page-summary-image-enabled], [data-page-summary-image]").forEach((field) => {
+        field.disabled = !foldEnabled;
+      });
+    };
+
+    const syncHeaderImageControls = () => {
+      const titleModeField = $("titleModeField");
+      if (titleModeField) titleModeField.style.display = "";
+      if ($("titleMode")) $("titleMode").disabled = false;
+    };
+
+    const syncHeaderModelControls = () => {
+      const customField = $("headerModelCustomField");
+      const isCustom = $("headerModelTag")?.value === "custom";
+      if (customField) customField.style.display = isCustom ? "" : "none";
+      if ($("headerModelCustom")) $("headerModelCustom").disabled = !isCustom;
+    };
+
+    const applyTitleModeOverlayPreset = () => {
+      $("imageOverlayEndOpacity").value = "0";
+    };
+
+    const syncIntroAvatarControls = (item) => {
+      item.querySelectorAll("[data-intro-avatar-size-field]").forEach((field) => {
+        field.style.display = "";
+        field.querySelectorAll("input").forEach((input) => {
+          input.disabled = false;
+        });
+      });
+    };
+
+    const attachDynamicListeners = (root) => {
+      root.querySelectorAll("input, textarea, select").forEach((field) => {
+        field.addEventListener("input", () => {
+          const pageItem = field.closest(".page-item");
+          if (pageItem && field.matches("[data-page-fold]")) syncPageFoldControls(pageItem);
+          const introItem = field.closest(".intro-item");
+          if (introItem && field.matches("[data-intro-avatar]")) syncIntroAvatarControls(introItem);
+          render();
+        });
+      });
+      root.querySelectorAll("[data-remove]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const list = button.closest(".item-list");
+          const item = button.closest(".edit-item");
+          if (list && item && list.children.length > 1) {
+            item.remove();
+            renumberItems(list);
+            render();
+          }
+        });
+      });
+    };
+
+    const renumberItems = (list) => {
+      list.querySelectorAll(".item-index").forEach((label, index) => {
+        label.textContent = `${index + 1}`;
+      });
+    };
+
+    const addSpeakerRule = (data = {}) => {
+      const item = document.createElement("div");
+      item.className = "edit-item speaker-rule";
+      item.innerHTML = `
+        <div class="item-head"><span>화자 <span class="item-index"></span></span><button class="icon-button" type="button" data-remove>삭제</button></div>
+        <div class="grid">
+          <label>캡쳐 단어
+            <input data-speaker-capture autocomplete="off" placeholder="딘아">
+          </label>
+          <label>나타나는 이름
+            <input data-speaker-name autocomplete="off" placeholder="딘">
+          </label>
+          <label>배치
+            <select data-speaker-side>
+              <option value="left">왼쪽</option>
+              <option value="right">오른쪽</option>
+            </select>
+          </label>
+          <label>이미지 URL
+            <input data-speaker-image autocomplete="off" placeholder="비워두면 이미지 없음">
+            <span class="field-note">//ac.namu.la/ 형식의 링크를 입력하세요.</span>
+          </label>
+        </div>`;
+      $("speakerRules").appendChild(item);
+      item.querySelector("[data-speaker-capture]").value = data.capture || "";
+      item.querySelector("[data-speaker-name]").value = data.name || "";
+      item.querySelector("[data-speaker-side]").value = data.side || "left";
+      item.querySelector("[data-speaker-image]").value = data.image || "";
+      attachDynamicListeners(item);
+      renumberItems($("speakerRules"));
+      render();
+    };
+
+    const addReplacementRule = (data = {}) => {
+      const item = document.createElement("div");
+      item.className = "edit-item replace-rule";
+      item.innerHTML = `
+        <div class="item-head"><span>치환 <span class="item-index"></span></span><button class="icon-button" type="button" data-remove>삭제</button></div>
+        <div class="grid">
+          <label>찾을 단어
+            <input data-replace-from autocomplete="off" placeholder="바꿀 원문">
+          </label>
+          <label>바꿀 단어
+            <input data-replace-to autocomplete="off" placeholder="출력될 문구">
+          </label>
+        </div>`;
+      $("replaceRules").appendChild(item);
+      item.querySelector("[data-replace-from]").value = data.from || "";
+      item.querySelector("[data-replace-to]").value = data.to || "";
+      attachDynamicListeners(item);
+      renumberItems($("replaceRules"));
+      render();
+    };
+
+    const addIntroItem = (data = {}) => {
+      const item = document.createElement("div");
+      item.className = "edit-item intro-item";
+      item.innerHTML = `
+        <div class="item-head"><span>캐릭터 <span class="item-index"></span></span><button class="icon-button" type="button" data-remove>삭제</button></div>
+        <div class="grid">
+          <label>정렬
+            <select data-intro-align>
+              <option value="center">가운데</option>
+              <option value="left">왼쪽</option>
+              <option value="right">오른쪽</option>
+            </select>
+          </label>
+          <label>이름
+            <input data-intro-name autocomplete="off">
+          </label>
+          <label class="wide">프사 URL
+            <input data-intro-avatar autocomplete="off">
+            <span class="field-note">//ac.namu.la/ 형식의 링크를 입력하세요.</span>
+          </label>
+          <label data-intro-avatar-size-field>프사 너비(px)
+            <input data-intro-avatar-width type="number" min="40" max="400" step="1">
+          </label>
+          <label data-intro-avatar-size-field>프사 높이(px)
+            <input data-intro-avatar-height type="number" min="40" max="500" step="1">
+          </label>
+          <label class="color-field" data-intro-avatar-size-field>프사 프레임색
+            <input data-intro-frame-color type="color">
+          </label>
+          <label class="wide">키워드
+            <textarea data-intro-tags spellcheck="false" placeholder="#태그, 키워드"></textarea>
+          </label>
+          <label class="wide">설명
+            <textarea data-intro-description spellcheck="false"></textarea>
+          </label>
+        </div>`;
+      $("introItems").appendChild(item);
+      item.querySelector("[data-intro-align]").value = data.align || "center";
+      item.querySelector("[data-intro-name]").value = data.name || "";
+      item.querySelector("[data-intro-avatar]").value = data.avatar || "";
+      item.querySelector("[data-intro-avatar-width]").value = data.avatarWidth || 130;
+      item.querySelector("[data-intro-avatar-height]").value = data.avatarHeight || 156;
+      item.querySelector("[data-intro-frame-color]").value = data.frameColor || $("introImageShadowColor")?.value || "#828282";
+      item.querySelector("[data-intro-tags]").value = data.tags || "";
+      item.querySelector("[data-intro-description]").value = data.description || "";
+      attachDynamicListeners(item);
+      syncIntroAvatarControls(item);
+      renumberItems($("introItems"));
+      render();
+    };
+
+    const addPageItem = (data = {}) => {
+      const item = document.createElement("div");
+      item.className = "edit-item page-item";
+      item.innerHTML = `
+        <div class="item-head"><span>페이지 <span class="item-index"></span></span><button class="icon-button" type="button" data-remove>삭제</button></div>
+        <div class="grid">
+          <label class="wide">페이지 제목
+            <input data-page-title autocomplete="off">
+          </label>
+          <label class="check-field wide">
+            <input data-page-fold type="checkbox" checked>
+            접기 사용
+          </label>
+          <label class="check-field wide">
+            <input data-page-summary-image-enabled type="checkbox">
+            접기 제목에 이미지 표시
+          </label>
+          <label class="wide">접기 제목 이미지 URL
+            <input data-page-summary-image autocomplete="off">
+            <span class="field-note">//ac.namu.la/ 형식의 링크를 입력하세요.</span>
+          </label>
+          <label class="wide">내용
+            <textarea class="page-content" data-page-content spellcheck="false"></textarea>
+          </label>
+        </div>`;
+      $("pageItems").appendChild(item);
+      item.querySelector("[data-page-title]").value = data.title || "";
+      item.querySelector("[data-page-fold]").checked = data.fold !== false;
+      item.querySelector("[data-page-summary-image-enabled]").checked = Boolean(data.summaryImageEnabled);
+      item.querySelector("[data-page-summary-image]").value = data.summaryImage || "";
+      item.querySelector("[data-page-content]").value = data.content || "";
+      attachDynamicListeners(item);
+      syncPageFoldControls(item);
+      renumberItems($("pageItems"));
+      render();
+    };
+
+    const getSpeakerRules = () => Array.from(document.querySelectorAll(".speaker-rule"))
+      .map((item) => {
+        const capture = fieldValue(item, "[data-speaker-capture]");
+        return {
+          capture,
+          name: fieldValue(item, "[data-speaker-name]") || capture,
+          side: fieldValue(item, "[data-speaker-side]") || "left",
+          imageUrl: normalizeImageUrl(fieldValue(item, "[data-speaker-image]"))
+        };
+      })
+      .filter((rule) => rule.capture);
+
+    const getReplacementRules = () => Array.from(document.querySelectorAll(".replace-rule"))
+      .map((item) => ({
+        from: fieldValue(item, "[data-replace-from]"),
+        to: fieldValue(item, "[data-replace-to]")
+      }))
+      .filter((rule) => rule.from);
+
+    const applyReplacementRules = (value, settings) => {
+      let result = normalizeQuotes(value);
+      if (!settings.replaceEnabled) return result;
+      settings.replacementRules.forEach((rule) => {
+        result = result.split(rule.from).join(rule.to);
+      });
+      return result;
+    };
+
+    const parseLine = (line, settings) => {
+      const trimmed = line.trim();
+      if (settings.contentMode === "novel") {
+        return { type: "narration", text: trimmed };
+      }
+
+      const match = trimmed.match(/^([^:：\n]{1,80})\s*[:：]\s*(.*)$/);
+
+      if (!match) {
+        return { type: "narration", text: trimmed };
+      }
+
+      const speaker = match[1].trim();
+      const text = match[2].trim();
+
+      const rule = settings.speakerRules.find((item) => item.capture === speaker);
+
+      if (rule) {
+        return { type: rule.side, speaker: rule.name, sourceSpeaker: speaker, text, imageUrl: rule.imageUrl };
+      }
+
+      if (settings.unknownSpeakerMode === "right") {
+        return { type: "right", speaker, sourceSpeaker: speaker, text, imageUrl: "" };
+      }
+
+      return { type: "left", speaker, sourceSpeaker: speaker, text, imageUrl: "" };
+    };
+
+    const getSettings = () => ({
+      headerEnabled: checked("headerEnabled"),
+      headerImageUrl: $("headerImageUrl").value.trim(),
+      headerTitle: $("headerTitle").value.trim(),
+      headerTags: $("headerTags").value.trim(),
+      headerModelTag: $("headerModelTag").value,
+      headerModelCustom: $("headerModelCustom").value.trim(),
+      headerPromptLink: $("headerPromptLink").value.trim(),
+      headerPromptText: $("headerPromptText").value.trim(),
+      headerBotLink: $("headerBotLink").value.trim(),
+      headerBotText: $("headerBotText").value.trim(),
+      headerSubtitle: $("headerSubtitle").value.trim(),
+      headerLabel: $("headerLabel").value.trim(),
+      headerAlign: $("headerAlign").value,
+      titleMode: $("titleMode").value,
+      foldTitleMode: $("foldTitleMode").value,
+      headerTitleColor: $("headerTitleColor").value,
+      foldTitleColor: $("foldTitleColor").value,
+      introEnabled: checked("introEnabled"),
+      bgmEnabled: checked("bgmEnabled"),
+      bgmLabel: $("bgmLabel").value.trim() || "MUSIC",
+      bgmTitle: $("bgmTitle").value.trim(),
+      bgmEmbed: $("bgmEmbed").value.trim(),
+      bgmWidth: Math.min(1000, Math.max(80, Number($("bgmWidth").value) || 420)),
+      bgmHeight: Math.min(500, Math.max(40, Number($("bgmHeight").value) || 166)),
+      replaceEnabled: checked("replaceEnabled"),
+      replacementRules: getReplacementRules(),
+      contentMode: $("contentMode").value,
+      speakerRules: getSpeakerRules(),
+      unknownSpeakerMode: $("unknownSpeakerMode").value,
+      fontFamily: $("fontFamily").value,
+      speechLetterSpacing: Number($("speechLetterSpacing").value) || 0,
+      narrationLetterSpacing: Number($("narrationLetterSpacing").value) || 0,
+      bodyColor: $("bodyColor").value,
+      nameColor: $("nameColor").value,
+      thoughtBgColor: $("thoughtBgColor").value,
+      thoughtTextColor: $("thoughtTextColor").value,
+      leftQuoteColor: $("leftQuoteColor").value,
+      rightQuoteColor: $("rightQuoteColor").value,
+      wrapperBg: $("wrapperBg").value,
+      wrapperText: $("wrapperText").value,
+      accentColor: $("accentColor").value,
+      wrapperBorderColor: $("wrapperBorderColor").value,
+      wrapperBorderOpacity: clampNumber($("wrapperBorderOpacity").value, 0, 1, 0.08),
+      boxShadowColor: $("boxShadowColor").value,
+      boxShadowOpacity: clampNumber($("boxShadowOpacity").value, 0, 1, 0.14),
+      imageOverlayStartOpacity: clampNumber($("imageOverlayStartOpacity").value, 0, 1, 0.62),
+      imageOverlayEndOpacity: clampNumber($("imageOverlayEndOpacity").value, 0, 1, 0),
+      introImageShadowColor: $("introImageShadowColor").value,
+      introTagBgColor: $("introTagBgColor").value,
+      introTagTextColor: $("introTagTextColor").value,
+      dividerLeftColor: $("dividerLeftColor").value,
+      dividerRightColor: $("dividerRightColor").value,
+      bgmLabelTextColor: $("bgmLabelTextColor").value
+    });
+
+    const headerBlock = (settings) => {
+      if (!settings.headerEnabled) return "";
+
+      const headerImageUrl = isImageUrl(settings.headerImageUrl) ? normalizeImageUrl(settings.headerImageUrl) : "";
+      const image = titleLayerBackground(headerImageUrl, settings, "center", settings.titleMode);
+      const headerColor = settings.headerTitleColor;
+      const headerShadow = `text-shadow:0 2px 6px ${rgba(settings.boxShadowColor, Math.min(1, settings.boxShadowOpacity + 0.04))};`;
+      const headerTags = settings.headerTags
+        .split(/[\n,]+/)
+        .map((tag) => tag.trim().replace(/^#+/, ""))
+        .filter(Boolean);
+      const modelTag = settings.headerModelTag === "custom" ? settings.headerModelCustom : settings.headerModelTag;
+      if (modelTag) headerTags.unshift(modelTag);
+      const headerTagMargin = settings.headerAlign === "right" ? "0 0 4px 5px" : "0 5px 4px 0";
+      const tagStyle = `font-size:10px;color:${rgba(headerColor, 0.72)};background:${rgba(settings.thoughtBgColor, 0.58)};border:1px solid ${rgba(settings.accentColor, 0.48)};padding:2px 8px;border-radius:20px;display:inline-block;margin:${headerTagMargin};${headerShadow}`;
+      const linkedHeaderTag = (labelText, linkUrl) => {
+        if (!labelText) return "";
+        const tag = `<span style="${tagStyle}">#${escapeHtml(labelText)}</span>`;
+        const href = normalizeLinkUrl(linkUrl);
+        return href ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${tag}</a>` : tag;
+      };
+      const headerSpecialTags = [
+        linkedHeaderTag(settings.headerPromptText, settings.headerPromptLink),
+        linkedHeaderTag(settings.headerBotText, settings.headerBotLink)
+      ];
+      const label = settings.headerLabel ? `<div style="font-size:11px;letter-spacing:4px;color:${headerColor};margin-bottom:9px;${headerShadow}">${escapeHtml(settings.headerLabel)}</div>` : "";
+      const title = settings.headerTitle ? `<div style="font-size:28px;color:${headerColor};letter-spacing:-0.05em;${headerShadow}">${escapeHtml(settings.headerTitle)}</div>` : "";
+      const tags = (headerTags.length || headerSpecialTags.length) ? `<div style="margin-top:12px;margin-bottom:3px;">${headerSpecialTags.join("")}${headerTags.map((tag) => `<span style="${tagStyle}">#${escapeHtml(tag)}</span>`).join("")}</div>` : "";
+      const subtitle = settings.headerSubtitle ? `<div style="font-size:13px;color:${headerColor};margin-top:9px;letter-spacing:1px;${headerShadow}">${escapeHtml(settings.headerSubtitle)}</div>` : "";
+
+      if (!headerImageUrl && !label && !title && !tags && !subtitle) return "";
+
+      return `${hiddenImage(headerImageUrl)}<div style="max-width:750px;margin:0 auto 18px auto;padding:58px 6%;letter-spacing:0.2px;${image}color:${headerColor};border-radius:14px;min-height:230px;text-align:${settings.headerAlign};${fontStyle(settings)}box-shadow:0 6px 24px ${rgba(settings.boxShadowColor, settings.boxShadowOpacity)};">
+  ${label}${title}${tags}${subtitle}
+</div>`;
+    };
+
+    const boxStyle = (settings) => `max-width:750px;margin:0 auto 18px auto;background:${settings.wrapperBg};border:1px solid ${rgba(settings.wrapperBorderColor, settings.wrapperBorderOpacity)};border-radius:14px;padding:18px 4%;${fontStyle(settings)}color:${settings.wrapperText};box-shadow:0 6px 24px ${rgba(settings.boxShadowColor, settings.boxShadowOpacity)};`;
+    const detailsStyle = (settings) => `max-width:750px;margin:16px auto 18px auto;border-radius:14px;background:${settings.wrapperBg};border:1px solid ${rgba(settings.wrapperBorderColor, settings.wrapperBorderOpacity)};${fontStyle(settings)}color:${settings.wrapperText};box-shadow:0 6px 24px ${rgba(settings.boxShadowColor, settings.boxShadowOpacity)};`;
+
+    const introDivider = (settings) => `<div style="padding:12px 6%;text-align:center;${fontStyle(settings)}">
+  <table style="border-collapse:collapse;border:medium;width:100%;">
+    <tbody>
+      <tr>
+        <td style="border:none;padding:0;vertical-align:middle;"><div style="height:1px;background:${settings.dividerLeftColor};">&nbsp;</div></td>
+        <td style="border:none;padding:0 12px;width:36px;text-align:center;vertical-align:middle;"><div style="width:32px;height:32px;border-radius:50%;border:1px solid ${settings.dividerLeftColor};line-height:32px;text-align:center;font-size:12px;color:${settings.dividerLeftColor};display:inline-block;">&amp;</div></td>
+        <td style="border:none;padding:0;vertical-align:middle;"><div style="height:1px;background:${settings.dividerRightColor};">&nbsp;</div></td>
+      </tr>
+    </tbody>
+  </table>
+</div>`;
+
+    const introBlock = (settings) => {
+      if (!settings.introEnabled) return "";
+
+      const blocks = Array.from(document.querySelectorAll(".intro-item"))
+        .map((item) => {
+          const name = fieldValue(item, "[data-intro-name]");
+          const avatarUrl = normalizeImageUrl(fieldValue(item, "[data-intro-avatar]"));
+          const showAvatar = isImageUrl(avatarUrl);
+          const avatarWidth = Math.min(400, Math.max(40, Number(fieldValue(item, "[data-intro-avatar-width]")) || 130));
+          const avatarHeight = Math.min(500, Math.max(40, Number(fieldValue(item, "[data-intro-avatar-height]")) || 156));
+          const align = fieldValue(item, "[data-intro-align]") || "center";
+          const frameColor = fieldValue(item, "[data-intro-frame-color]") || settings.introImageShadowColor;
+          const description = fieldValue(item, "[data-intro-description]");
+          const tags = fieldValue(item, "[data-intro-tags]")
+            .split(/[\n,]+/)
+            .map((tag) => tag.trim().replace(/^#+/, ""))
+            .filter(Boolean);
+          const tagMargin = align === "right" ? "0 0 4px 4px" : "0 4px 4px 0";
+          const tagsHtml = tags.length
+            ? `<div style="margin-bottom:12px;">${tags.map((tag) => `<span style="font-size:10px;color:${settings.introTagTextColor};background:${settings.introTagBgColor};padding:2px 8px;border-radius:20px;display:inline-block;margin:${tagMargin};">#${escapeHtml(tag)}</span>`).join("")}</div>`
+            : "";
+          const imageShadowColor = frameColor;
+          const imageShadow = align === "right" ? `box-shadow:${imageShadowColor} -4px 4px 1px;` : `box-shadow:${imageShadowColor} 4px 4px 1px;`;
+          const imageBlock = showAvatar ? `<td style="border:none;padding:${align === "right" ? "0 0 0 14px" : "0 14px 0 0"};width:${avatarWidth}px;vertical-align:top;">
+        <div style="width:${avatarWidth}px;height:${avatarHeight}px;border-radius:10px;background:url('${escapeCssUrl(avatarUrl)}') 50% 30% / cover no-repeat;${imageShadow}">&nbsp;</div>
+      </td>` : "";
+          const textBlock = `<td style="border:none;padding:0;vertical-align:top;text-align:${align === "right" ? "right" : align};${fontStyle(settings)}">
+        ${name ? `<div style="font-size:18px;color:${settings.nameColor};margin-bottom:8px;line-height:1.2;">${escapeHtml(name)}</div>` : ""}${tagsHtml}${description ? `
+        <div style="font-size:14px;color:${settings.bodyColor};line-height:1.75;letter-spacing:${settings.narrationLetterSpacing}px;"><span style="color:${settings.wrapperText};">${lineBreaks(description, settings)}</span></div>` : ""}
+      </td>`;
+
+          if (!name && !showAvatar && !description && !tags.length) return "";
+
+          if (align === "center") {
+            return `<div style="padding:18px 8%;text-align:center;${fontStyle(settings)}">
+  ${showAvatar ? `<div style="width:${avatarWidth}px;height:${avatarHeight}px;margin:0 auto 14px auto;border-radius:10px;background:url('${escapeCssUrl(avatarUrl)}') 50% 30% / cover no-repeat;box-shadow:${frameColor} 4px 4px 1px;">&nbsp;</div>` : ""}${name ? `
+  <div style="font-size:18px;color:${settings.nameColor};margin-bottom:8px;line-height:1.2;">${escapeHtml(name)}</div>` : ""}${tagsHtml}${description ? `
+  <div style="font-size:14px;color:${settings.bodyColor};line-height:1.75;letter-spacing:${settings.narrationLetterSpacing}px;"><span style="color:${settings.wrapperText};">${lineBreaks(description, settings)}</span></div>` : ""}
+</div>`;
+          }
+
+          return `<div style="padding:18px 8%;">
+  <table style="border-collapse:collapse;border:medium;width:100%;">
+    <tbody>
+      <tr>
+      ${align === "right" ? `${textBlock}\n      ${imageBlock}` : `${imageBlock}\n      ${textBlock}`}
+      </tr>
+    </tbody>
+  </table>
+</div>`;
+        })
+        .filter(Boolean);
+
+      if (!blocks.length) return "";
+
+      return `<div style="${boxStyle(settings)}">
+${blocks.map((block, index) => index ? `${introDivider(settings)}\n${block}` : block).join("\n")}
+</div>`;
+    };
+    const dialogueText = (value) => String(value).trim();
+
+    const speakerImageCell = (imageUrl, side) => imageUrl ? `<td style="border:none;padding:${side === "right" ? "10px 10px 10px 0" : "10px"};width:58px;vertical-align:top;">
+        <img style="width:0px;height:0px;" src="${escapeHtml(imageUrl)}" class="fr-fic fr-dii"><div style="width:50px;height:50px;border-radius:50%;background:url('${escapeCssUrl(imageUrl)}') 50% 50% / cover no-repeat;">&nbsp;</div>
+      </td>` : "";
+
+    const leftBlock = (line, settings) => {
+      const imageUrl = isImageUrl(line.imageUrl) ? normalizeImageUrl(line.imageUrl) : "";
+      const imageCell = speakerImageCell(imageUrl, "left");
+      return `<table style="border-collapse:collapse;border:medium;margin-bottom:10px;width:100%;">
+  <tbody>
+    <tr>
+      ${imageCell}
+      <td style="border:none;padding:10px 3%;vertical-align:top;${fontStyle(settings)}">
+        <div style="font-size:11px;color:${settings.nameColor};letter-spacing:1px;margin-bottom:4px;">${escapeHtml(line.speaker)}</div>
+        <div style="font-size:14px;line-height:1.82;color:${settings.bodyColor};letter-spacing:${settings.speechLetterSpacing}px;"><span style="font-size:28px;color:${settings.leftQuoteColor};vertical-align:middle;">&quot;</span> ${lineBreaks(dialogueText(line.text), settings, { hideDoubleQuotes: true })}</div>
+      </td>
+    </tr>
+  </tbody>
+</table>`;
+    };
+    const rightBlock = (line, settings) => {
+      const imageUrl = isImageUrl(line.imageUrl) ? normalizeImageUrl(line.imageUrl) : "";
+      const imageCell = speakerImageCell(imageUrl, "right");
+      return `<table style="border-collapse:collapse;border:medium;margin-bottom:10px;margin-left:auto;width:100%;">
+  <tbody>
+    <tr>
+      <td style="border:none;padding:10px 3%;vertical-align:top;text-align:right;${fontStyle(settings)}">
+        <div style="font-size:11px;color:${settings.nameColor};letter-spacing:1px;margin-bottom:4px;">${escapeHtml(line.speaker)}</div>
+        <div style="font-size:14px;line-height:1.82;color:${settings.bodyColor};letter-spacing:${settings.speechLetterSpacing}px;">${lineBreaks(dialogueText(line.text), settings, { hideDoubleQuotes: true })} <span style="font-size:28px;color:${settings.rightQuoteColor};vertical-align:middle;">&quot;</span></div>
+      </td>
+      ${imageCell}
+    </tr>
+  </tbody>
+</table>`;
+    };
+
+    const narrationBlock = (line, settings) => {
+      const isNovel = settings.contentMode === "novel";
+      const marginBottom = isNovel ? 5 : 6;
+      const lineHeight = isNovel ? 1.885 : 1.95;
+      const content = isNovel
+        ? lineBreaks(line.text, settings, { boldDoubleQuoteContent: true })
+        : lineBreaks(line.text, settings);
+      return `<p style="margin:0 0 ${marginBottom}px 0;padding:0 6%;color:${settings.bodyColor};line-height:${lineHeight};letter-spacing:${settings.narrationLetterSpacing}px;font-size:14px;${fontStyle(settings)}">${content}</p>`;
+    };
+
+    const pageContent = (lines, settings) => applyReplacementRules(lines, settings)
+        .split(/\r?\n/)
+        .map((line) => parseLine(line, settings))
+        .filter((line) => line.text.length > 0 || line.type !== "narration")
+        .map((line) => {
+          if (line.type === "left") return leftBlock(line, settings);
+          if (line.type === "right") return rightBlock(line, settings);
+          return narrationBlock(line, settings);
+        })
+        .join("\n\n");
+
+
+    const bgmSrc = (value) => {
+      const raw = String(value).trim();
+      if (!raw) return "";
+      const iframeMatch = raw.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+      const candidate = normalizeImageUrl(iframeMatch ? iframeMatch[1] : raw);
+      if (!/^https?:\/\//i.test(candidate)) return "";
+
+      try {
+        const url = new URL(candidate);
+        const host = url.hostname.replace(/^www\./, "");
+        if (host === "youtu.be") {
+          const id = url.pathname.split("/").filter(Boolean)[0];
+          return id ? `https://www.youtube.com/embed/${encodeURIComponent(id)}` : "";
+        }
+        if (host.endsWith("youtube.com") || host === "music.youtube.com") {
+          const parts = url.pathname.split("/").filter(Boolean);
+          const id = url.searchParams.get("v") || ((parts[0] === "shorts" || parts[0] === "live" || parts[0] === "embed") ? parts[1] : "");
+          if (id) return `https://www.youtube.com/embed/${encodeURIComponent(id)}`;
+        }
+        if (host === "w.soundcloud.com") return candidate;
+        if (host.endsWith("soundcloud.com")) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(candidate)}`;
+        return candidate;
+      } catch {
+        return "";
+      }
+    };
+
+    const bgmBlock = (settings) => {
+      if (!settings.bgmEnabled) return "";
+      const src = bgmSrc(settings.bgmEmbed);
+      if (!src) return "";
+      const label = settings.bgmLabel ? `<span style="display:inline-block;padding:3px 9px;border-radius:4px;background:${settings.accentColor};color:${settings.bgmLabelTextColor};font-size:9px;letter-spacing:1.6px;">${escapeHtml(settings.bgmLabel)}</span>` : "";
+      const title = settings.bgmTitle ? `<span style="display:inline-block;margin-left:8px;color:${settings.nameColor};font-size:12px;letter-spacing:0.5px;">${escapeHtml(settings.bgmTitle)}</span>` : "";
+      return `<div style="margin:0 auto 18px auto;padding:0;text-align:center;${fontStyle(settings)}">
+  <div style="width:${settings.bgmWidth}px;max-width:100%;margin:0 auto 8px auto;text-align:left;">${label}${title}</div>
+  <iframe style="border:none;width:${settings.bgmWidth}px;height:${settings.bgmHeight}px;display:block;margin:0 auto;max-width:100%;" src="${escapeHtml(src)}" allow="autoplay; encrypted-media" loading="lazy"></iframe>
+</div>`;
+    };
+    const bodyBlock = (settings) => {
+      const pages = Array.from(document.querySelectorAll(".page-item"))
+        .map((item, index) => {
+          const title = fieldValue(item, "[data-page-title]") || `페이지 ${index + 1}`;
+          const foldEnabled = item.querySelector("[data-page-fold]")?.checked;
+          const summaryImageEnabled = item.querySelector("[data-page-summary-image-enabled]")?.checked;
+          const summaryImage = normalizeImageUrl(fieldValue(item, "[data-page-summary-image]"));
+          const useSummaryImage = foldEnabled && summaryImageEnabled && isImageUrl(summaryImage);
+          const summaryColor = settings.foldTitleColor;
+          const summaryStyle = useSummaryImage
+            ? `list-style:none;padding:42px 40px;letter-spacing:-0.05em;${titleLayerBackground(summaryImage, settings, "center", settings.foldTitleMode)}color:${summaryColor};border-radius:14px 14px 0 0;min-height:120px;`
+            : `list-style:none;padding:42px 40px;font-size:13px;color:${summaryColor};letter-spacing:-0.05em;${titleLayerBackground("", settings, "center", settings.foldTitleMode)}border-radius:14px 14px 0 0;min-height:120px;`;
+          const summaryTextStyle = useSummaryImage
+            ? `color:${summaryColor};font-size:14px;letter-spacing:-0.05em;`
+            : `display:inline-block;color:${summaryColor};font-size:14px;letter-spacing:-0.05em;`;
+          const content = pageContent(item.querySelector("[data-page-content]")?.value || "", settings);
+          if (!content) return "";
+
+          if (!foldEnabled) {
+            return `<div style="${boxStyle(settings)}">
+  <div style="font-size:13px;color:${settings.accentColor};letter-spacing:1px;margin-bottom:12px;">${escapeHtml(title)}</div>
+  <div style="height:1em;line-height:1em;">&nbsp;</div>
+${content}
+  <div style="height:1em;line-height:1em;">&nbsp;</div>
+</div>`;
+          }
+
+          return `${hiddenImage(useSummaryImage ? summaryImage : "")}<details style="${detailsStyle(settings)}">
+  <summary style="${summaryStyle}"><span style="${summaryTextStyle}">${escapeHtml(title)}</span></summary>
+  <div style="padding:30px 16px 32px 16px;">
+${content}
+  </div>
+</details>`;
+        })
+        .filter(Boolean);
+
+      return pages.join("\n\n");
+    };
+
+    const creditBlock = (settings) => `<div style="max-width:750px;margin:0 auto 18px auto;padding:10px 4%;text-align:center;font-size:11px;line-height:1.6;letter-spacing:1px;color:${settings.nameColor};${fontStyle(settings)}">
+  made with <span style="color:${settings.accentColor};">Loglace</span>
+</div>`;
+
+    const generateHtml = () => {
+      const settings = getSettings();
+      const pieces = [bgmBlock(settings), headerBlock(settings), introBlock(settings), bodyBlock(settings)].filter(Boolean);
+      if (pieces.length) pieces.push(creditBlock(settings));
+
+      return pieces.join("\n\n");
+    };
+
+    const render = () => {
+      const html = generateHtml();
+      $("htmlOutput").value = html;
+      $("preview").innerHTML = html || "<p style=\"color:#797f86;\">원문을 입력하면 미리보기가 표시됩니다.</p>";
+    };
+
+    const setStatus = (message) => {
+      $("status").textContent = message;
+      window.clearTimeout(setStatus.timer);
+      setStatus.timer = window.setTimeout(() => {
+        $("status").textContent = "";
+      }, 2200);
+    };
+
+    const syncContentModeControls = () => {
+      const isNovel = $("contentMode")?.value === "novel";
+      [$("unknownSpeakerField"), $("speakerRulesField")].forEach((item) => {
+        if (item) item.style.display = isNovel ? "none" : "";
+      });
+    };
+    const applyThemeValues = (values) => {
+      themeKeys.forEach((key) => {
+        if (Object.hasOwn(values, key) && $(key)) $(key).value = values[key];
+      });
+      render();
+    };
+
+    const applyTheme = (themeName) => {
+      if (themeName === "custom") {
+        if ($("themeJson").value.trim()) importThemeJson();
+        return;
+      }
+      const theme = themes[themeName];
+      if (!theme) return;
+
+      const values = completeThemeValues(theme);
+      applyThemeValues(values);
+      $("headerTitleColor").value = theme.accentColor;
+      $("foldTitleColor").value = theme.nameColor;
+      render();
+    };
+
+    const currentThemePayload = () => ({
+      name: $("customThemeName").value.trim() || "Custom Theme",
+      version: 1,
+      theme: Object.fromEntries(themeKeys.map((key) => [key, $(key)?.value ?? ""]))
+    });
+
+    const exportThemeJson = () => {
+      $("themeJson").value = JSON.stringify(currentThemePayload(), null, 2);
+      $("themePreset").value = "custom";
+      setStatus("현재 글꼴과 색상을 테마 JSON으로 내보냈습니다.");
+    };
+
+    const downloadThemeFile = () => {
+      exportThemeJson();
+      const payload = $("themeJson").value;
+      const blob = new Blob([payload], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const fileName = ($("customThemeName").value.trim() || "loglace-theme")
+        .replace(/[\\/:*?"<>|]+/g, "-")
+        .replace(/\s+/g, "-")
+        .toLowerCase();
+      link.href = url;
+      link.download = `${fileName}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      setStatus("테마 파일을 저장했습니다.");
+    };
+
+    const importThemeJson = () => {
+      try {
+        const parsed = JSON.parse($("themeJson").value);
+        const values = parsed.theme || parsed.values || parsed;
+        if (!values || typeof values !== "object") throw new Error("theme");
+        if (parsed.name) $("customThemeName").value = parsed.name;
+        applyThemeValues(completeThemeValues(values));
+        $("themePreset").value = "custom";
+        setStatus("커스텀 테마를 적용했습니다.");
+      } catch {
+        setStatus("테마 JSON 형식을 확인해 주세요.");
+      }
+    };
+
+    const loadThemeFile = () => {
+      $("themeFileInput").click();
+    };
+
+    const readThemeFile = (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        $("themeJson").value = String(reader.result || "");
+        importThemeJson();
+        event.target.value = "";
+      });
+      reader.addEventListener("error", () => {
+        setStatus("테마 파일을 읽지 못했습니다.");
+        event.target.value = "";
+      });
+      reader.readAsText(file, "utf-8");
+    };
+
+    const copyHtml = async () => {
+      render();
+      try {
+        await navigator.clipboard.writeText($("htmlOutput").value);
+        setStatus("HTML을 클립보드에 복사했습니다.");
+      } catch {
+        $("htmlOutput").focus();
+        $("htmlOutput").select();
+        document.execCommand("copy");
+        setStatus("HTML 영역을 선택해 복사했습니다.");
+      }
+    };
+
+    const downloadHtml = () => {
+      render();
+      const blob = new Blob([$("htmlOutput").value], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "log-inline-html.html";
+      link.click();
+      URL.revokeObjectURL(url);
+      setStatus("HTML 파일을 저장했습니다.");
+    };
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach((item) => item.classList.remove("active"));
+        document.querySelectorAll(".pane").forEach((pane) => pane.classList.remove("active"));
+        tab.classList.add("active");
+        $(tab.dataset.pane).classList.add("active");
+      });
+    });
+
+    document.querySelectorAll(".bookmark-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".bookmark-tab").forEach((item) => item.classList.remove("active"));
+        document.querySelectorAll(".editor-panel").forEach((panel) => panel.classList.remove("active"));
+        tab.classList.add("active");
+        $(tab.dataset.editor).classList.add("active");
+      });
+    });
+
+    fields.forEach((id) => $(id)?.addEventListener("input", () => {
+      if (id === "contentMode") syncContentModeControls();
+      if (id === "headerImageUrl") syncHeaderImageControls();
+      if (id === "headerModelTag") syncHeaderModelControls();
+      if (id === "titleMode" || id === "foldTitleMode") applyTitleModeOverlayPreset();
+      render();
+    }));
+    $("themePreset").addEventListener("change", (event) => applyTheme(event.target.value));
+    $("addIntro").addEventListener("click", () => addIntroItem({ name: "", avatar: "", align: "center", frameColor: $("introImageShadowColor")?.value || "#b99aa4", tags: "", description: "" }));
+    $("addSpeaker").addEventListener("click", () => addSpeakerRule({ capture: "", name: "", side: "left", image: "" }));
+    $("addReplace").addEventListener("click", () => addReplacementRule({ from: "", to: "" }));
+    $("addPage").addEventListener("click", () => addPageItem({ title: "", content: "" }));
+    $("copyHtml").addEventListener("click", copyHtml);
+    $("downloadHtml").addEventListener("click", downloadHtml);
+    $("exportThemeJson").addEventListener("click", exportThemeJson);
+    $("importThemeJson").addEventListener("click", importThemeJson);
+    $("downloadThemeFile").addEventListener("click", downloadThemeFile);
+    $("loadThemeFile").addEventListener("click", loadThemeFile);
+    $("themeFileInput").addEventListener("change", readThemeFile);
+
+    syncContentModeControls();
+    syncHeaderImageControls();
+    syncHeaderModelControls();
+    applyTheme($("themePreset").value);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
