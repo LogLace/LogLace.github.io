@@ -897,7 +897,7 @@
           <h2 class="section-title">원문</h2>
           <div id="pageItems" class="item-list"></div>
           <button id="addPage" class="secondary add-button" type="button">+ 페이지 추가</button>
-          <p class="hint">각 페이지 내용 형식은 <strong>이름: 내용</strong>입니다. 콜론이 없는 줄은 나레이션입니다.</p>
+          <p id="dialogueFormatHint" class="hint">각 페이지 내용 형식은 <strong>이름: 내용</strong>입니다. 콜론이 없는 줄은 나레이션입니다.</p>
           <div class="actions">
             <button id="downloadHtml" class="secondary">파일 저장</button>
           </div>
@@ -1827,7 +1827,7 @@ ${content}
 
     const syncContentModeControls = () => {
       const isNovel = $("contentMode")?.value === "novel";
-      [$("unknownSpeakerField"), $("speakerRulesField")].forEach((item) => {
+      [$("unknownSpeakerField"), $("speakerRulesField"), $("dialogueFormatHint")].forEach((item) => {
         if (item) item.style.display = isNovel ? "none" : "";
       });
     };
