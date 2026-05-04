@@ -795,6 +795,25 @@
           </div>
           <p class="hint">그림자, 이미지 덮개, 소개 이미지 장식까지 테마 JSON과 파일 저장에 포함됩니다.</p>
         </section>
+
+        <section class="section">
+          <h2 class="section-title">콘텐츠 설정</h2>
+          <div class="grid">
+            <label class="wide">설정 이름
+              <input id="customContentName" value="Custom Content" autocomplete="off">
+            </label>
+            <label class="wide">콘텐츠 JSON
+              <textarea id="contentJson" class="theme-json" spellcheck="false" placeholder="헤더 텍스트, 소개, 화자 설정을 테마와 별개로 저장합니다."></textarea>
+            </label>
+            <button id="exportContentJson" class="secondary" type="button">JSON 내보내기</button>
+            <button id="importContentJson" type="button">JSON 적용</button>
+            <button id="downloadContentFile" class="secondary" type="button">설정 파일 저장</button>
+            <button id="loadContentFile" type="button">설정 파일 불러오기</button>
+            <button id="clearLocalContent" class="secondary" type="button">로컬 설정 초기화</button>
+            <input id="contentFileInput" type="file" accept="application/json,.json" hidden>
+          </div>
+          <p class="hint">테마 색상은 건드리지 않고 헤더 입력값, 캐릭터 소개, 화자 배치만 저장하고 불러옵니다. 이 설정은 브라우저에도 자동 저장됩니다.</p>
+        </section>
       </div>
 
       <div id="introEditor" class="editor-panel">
@@ -838,7 +857,7 @@
               <input id="bgmHeight" type="number" min="40" max="500" step="1" value="166">
             </label>
           </div>
-          <p class="hint">BGM은 소개 아래에 박스 없이 iframe만 출력합니다. 아카라이브에서 허용되는 임베드의 크기만 조절합니다.</p>
+          <p class="hint">BGM은 소개 아래에 박스 없이 iframe만 출력합니다. SoundCloud는 아카라이브에서 크기 스타일이 제거될 수 있습니다.</p>
         </section>
       </div>
 
@@ -1161,6 +1180,7 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
+    const contentStorageKey = "loglace-content-settings-v1";
 
     const escapeCssUrl = (value) => String(value)
       .replaceAll("\\", "\\\\")
@@ -1187,6 +1207,7 @@
       });
       return html;
     };
+    const breakLongText = (value, size = 26) => escapeHtml(value).replace(new RegExp(`(\\S{${size}})(?=\\S)`, "g"), "$1<br>");
     const lineBreaks = (value, settings, options) => formatInline(value, settings, options).replace(/\n/g, "<br>");
     const boldLineBreaks = (value, settings, options) => `<strong>${lineBreaks(value, settings, options)}</strong>`;
     const checked = (id) => $(id).checked;
@@ -1276,6 +1297,7 @@
           if (pageItem && field.matches("[data-page-fold]")) syncPageFoldControls(pageItem);
           const introItem = field.closest(".intro-item");
           if (introItem && field.matches("[data-intro-avatar]")) syncIntroAvatarControls(introItem);
+          saveContentToLocal();
           render();
         });
       });
@@ -1286,6 +1308,7 @@
           if (list && item && list.children.length > 1) {
             item.remove();
             renumberItems(list);
+            saveContentToLocal();
             render();
           }
         });
@@ -1556,7 +1579,11 @@
       if (!settings.headerEnabled) return "";
 
       const headerImageUrl = isImageUrl(settings.headerImageUrl) ? normalizeImageUrl(settings.headerImageUrl) : "";
-      const image = titleLayerBackground(headerImageUrl, settings, "center", settings.titleMode);
+      const headerBg = headerImageUrl
+        ? `background-image:url('${escapeCssUrl(headerImageUrl)}');background-color:${settings.wrapperBg};background-size:cover;background-position:center;background-repeat:no-repeat;`
+        : `background:${settings.wrapperBg};`;
+      const overlayColor = settings.titleMode === "dark" ? "#000000" : "#ffffff";
+      const overlay = `background:linear-gradient(90deg,${rgba(overlayColor, settings.imageOverlayStartOpacity)} 0%,${rgba(overlayColor, settings.imageOverlayEndOpacity)} 100%);`;
       const headerColor = settings.headerTitleColor;
       const headerShadow = `text-shadow:0 2px 6px ${rgba(settings.boxShadowColor, Math.min(1, settings.boxShadowOpacity + 0.04))};`;
       const headerTags = settings.headerTags
@@ -1584,8 +1611,10 @@
 
       if (!headerImageUrl && !label && !title && !tags && !subtitle) return "";
 
-      return `${hiddenImage(headerImageUrl)}<div style="max-width:750px;margin:0 auto 18px auto;padding:58px 6%;letter-spacing:0.2px;${image}color:${headerColor};border-radius:14px;min-height:230px;text-align:${settings.headerAlign};${fontStyle(settings)}box-shadow:0 6px 24px ${rgba(settings.boxShadowColor, settings.boxShadowOpacity)};">
-  ${label}${title}${tags}${subtitle}
+      return `${hiddenImage(headerImageUrl)}<div style="max-width:750px;width:100%;margin:0 auto 18px auto;${headerBg}color:${headerColor};border:1px solid ${rgba(settings.wrapperBorderColor, settings.wrapperBorderOpacity)};border-radius:14px;display:table;${fontStyle(settings)}box-shadow:0 6px 24px ${rgba(settings.boxShadowColor, settings.boxShadowOpacity)};">
+  <div style="display:table-cell;vertical-align:middle;height:230px;padding:58px 6%;letter-spacing:0.2px;${overlay}border-radius:14px;text-align:${settings.headerAlign};">
+    ${label}${title}${tags}${subtitle}
+  </div>
 </div>`;
     };
 
@@ -1753,11 +1782,11 @@ ${blocks.map((block, index) => index ? `${introDivider(settings)}\n${block}` : b
       if (!settings.bgmEnabled) return "";
       const src = bgmSrc(settings.bgmEmbed);
       if (!src) return "";
-      const label = settings.bgmLabel ? `<span style="display:inline-block;padding:3px 9px;border-radius:4px;background:${settings.accentColor};color:${settings.bgmLabelTextColor};font-size:9px;letter-spacing:1.6px;">${escapeHtml(settings.bgmLabel)}</span>` : "";
-      const title = settings.bgmTitle ? `<span style="display:inline-block;margin-left:8px;color:${settings.nameColor};font-size:12px;letter-spacing:0.5px;">${escapeHtml(settings.bgmTitle)}</span>` : "";
+      const label = settings.bgmLabel ? `<span style="display:inline-block;max-width:100%;padding:3px 9px;border-radius:4px;background:${settings.accentColor};color:${settings.bgmLabelTextColor};font-size:9px;letter-spacing:1.6px;line-height:1.5;word-break:break-all;">${breakLongText(settings.bgmLabel)}</span>` : "";
+      const title = settings.bgmTitle ? `<span style="display:inline-block;max-width:100%;margin-left:8px;color:${settings.nameColor};font-size:12px;letter-spacing:0.5px;line-height:1.5;word-break:break-all;">${breakLongText(settings.bgmTitle, 34)}</span>` : "";
       return `<div style="margin:0 auto 18px auto;padding:0;text-align:center;${fontStyle(settings)}">
   <div style="width:${settings.bgmWidth}px;max-width:100%;margin:0 auto 8px auto;text-align:left;">${label}${title}</div>
-  <iframe style="border:none;width:${settings.bgmWidth}px;height:${settings.bgmHeight}px;display:block;margin:0 auto;max-width:100%;" src="${escapeHtml(src)}" allow="autoplay; encrypted-media" loading="lazy"></iframe>
+  <iframe width="${settings.bgmWidth}" height="${settings.bgmHeight}" style="border:none;width:${settings.bgmWidth}px;height:${settings.bgmHeight}px;display:block;margin:0 auto;max-width:100%;" src="${escapeHtml(src)}" allow="autoplay; encrypted-media" loading="lazy"></iframe>
 </div>`;
     };
     const bodyBlock = (settings) => {
@@ -1769,12 +1798,14 @@ ${blocks.map((block, index) => index ? `${introDivider(settings)}\n${block}` : b
           const summaryImage = normalizeImageUrl(fieldValue(item, "[data-page-summary-image]"));
           const useSummaryImage = foldEnabled && summaryImageEnabled && isImageUrl(summaryImage);
           const summaryColor = settings.foldTitleColor;
-          const summaryStyle = useSummaryImage
-            ? `list-style:none;padding:42px 40px;letter-spacing:-0.05em;${titleLayerBackground(summaryImage, settings, "center", settings.foldTitleMode)}color:${summaryColor};border-radius:14px 14px 0 0;min-height:120px;`
-            : `list-style:none;padding:42px 40px;font-size:13px;color:${summaryColor};letter-spacing:-0.05em;${titleLayerBackground("", settings, "center", settings.foldTitleMode)}border-radius:14px 14px 0 0;min-height:120px;`;
-          const summaryTextStyle = useSummaryImage
-            ? `color:${summaryColor};font-size:14px;letter-spacing:-0.05em;`
-            : `display:inline-block;color:${summaryColor};font-size:14px;letter-spacing:-0.05em;`;
+          const summaryBg = useSummaryImage
+            ? `background-image:url('${escapeCssUrl(summaryImage)}');background-color:${settings.wrapperBg};background-size:cover;background-position:center;background-repeat:no-repeat;`
+            : `background:${settings.wrapperBg};`;
+          const summaryOverlayColor = settings.foldTitleMode === "dark" ? "#000000" : "#ffffff";
+          const summaryOverlay = `background:linear-gradient(90deg,${rgba(summaryOverlayColor, settings.imageOverlayStartOpacity)} 0%,${rgba(summaryOverlayColor, settings.imageOverlayEndOpacity)} 100%);`;
+          const summaryStyle = `list-style:none;padding:0;letter-spacing:-0.05em;${summaryBg}color:${summaryColor};border-radius:14px 14px 0 0;display:table;width:100%;`;
+          const summaryInnerStyle = `display:table-cell;vertical-align:middle;min-height:120px;height:120px;padding:42px 40px;${summaryOverlay}border-radius:14px 14px 0 0;`;
+          const summaryTextStyle = `display:inline-block;color:${summaryColor};font-size:14px;letter-spacing:-0.05em;`;
           const content = pageContent(item.querySelector("[data-page-content]")?.value || "", settings);
           if (!content) return "";
 
@@ -1788,7 +1819,7 @@ ${content}
           }
 
           return `${hiddenImage(useSummaryImage ? summaryImage : "")}<details style="${detailsStyle(settings)}">
-  <summary style="${summaryStyle}"><span style="${summaryTextStyle}">${escapeHtml(title)}</span></summary>
+  <summary style="${summaryStyle}"><span style="${summaryInnerStyle}"><span style="${summaryTextStyle}">${escapeHtml(title)}</span></span></summary>
   <div style="padding:30px 16px 32px 16px;">
 ${content}
   </div>
@@ -1916,6 +1947,185 @@ ${content}
       reader.readAsText(file, "utf-8");
     };
 
+    const currentContentPayload = () => ({
+      name: $("customContentName").value.trim() || "Custom Content",
+      version: 1,
+      content: {
+        header: {
+          headerEnabled: checked("headerEnabled"),
+          headerImageUrl: $("headerImageUrl").value.trim(),
+          headerTitle: $("headerTitle").value.trim(),
+          headerTags: $("headerTags").value.trim(),
+          headerModelTag: $("headerModelTag").value,
+          headerModelCustom: $("headerModelCustom").value.trim(),
+          headerPromptLink: $("headerPromptLink").value.trim(),
+          headerPromptText: $("headerPromptText").value.trim(),
+          headerBotLink: $("headerBotLink").value.trim(),
+          headerBotText: $("headerBotText").value.trim(),
+          headerSubtitle: $("headerSubtitle").value.trim(),
+          headerLabel: $("headerLabel").value.trim(),
+          headerAlign: $("headerAlign").value,
+          titleMode: $("titleMode").value
+        },
+        intro: {
+          introEnabled: checked("introEnabled"),
+          items: Array.from(document.querySelectorAll(".intro-item")).map((item) => ({
+            align: fieldValue(item, "[data-intro-align]"),
+            name: fieldValue(item, "[data-intro-name]"),
+            avatar: fieldValue(item, "[data-intro-avatar]"),
+            avatarWidth: fieldValue(item, "[data-intro-avatar-width]"),
+            avatarHeight: fieldValue(item, "[data-intro-avatar-height]"),
+            frameColor: fieldValue(item, "[data-intro-frame-color]"),
+            tags: fieldValue(item, "[data-intro-tags]"),
+            description: fieldValue(item, "[data-intro-description]")
+          }))
+        },
+        speakers: {
+          contentMode: $("contentMode").value,
+          unknownSpeakerMode: $("unknownSpeakerMode").value,
+          rules: Array.from(document.querySelectorAll(".speaker-rule")).map((item) => ({
+            capture: fieldValue(item, "[data-speaker-capture]"),
+            name: fieldValue(item, "[data-speaker-name]"),
+            side: fieldValue(item, "[data-speaker-side]"),
+            image: fieldValue(item, "[data-speaker-image]")
+          }))
+        }
+      }
+    });
+
+    const saveContentToLocal = () => {
+      try {
+        localStorage.setItem(contentStorageKey, JSON.stringify(currentContentPayload()));
+      } catch {
+        return false;
+      }
+      return true;
+    };
+
+    const loadContentFromLocal = () => {
+      try {
+        const raw = localStorage.getItem(contentStorageKey);
+        if (!raw) return false;
+        const parsed = JSON.parse(raw);
+        const content = parsed.content || parsed.values || parsed;
+        if (!content || typeof content !== "object") return false;
+        if (parsed.name) $("customContentName").value = parsed.name;
+        applyContentValues(content, { skipLocalSave: true });
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const clearLocalContent = () => {
+      try {
+        localStorage.removeItem(contentStorageKey);
+        setStatus("로컬 콘텐츠 설정을 초기화했습니다.");
+      } catch {
+        setStatus("로컬 설정을 초기화하지 못했습니다.");
+      }
+    };
+
+    const applyContentValues = (content, options = {}) => {
+      const header = content.header || {};
+      const headerFields = [
+        "headerImageUrl",
+        "headerTitle",
+        "headerTags",
+        "headerModelTag",
+        "headerModelCustom",
+        "headerPromptLink",
+        "headerPromptText",
+        "headerBotLink",
+        "headerBotText",
+        "headerSubtitle",
+        "headerLabel",
+        "headerAlign",
+        "titleMode"
+      ];
+      if (Object.hasOwn(header, "headerEnabled")) $("headerEnabled").checked = Boolean(header.headerEnabled);
+      headerFields.forEach((key) => {
+        if (Object.hasOwn(header, key) && $(key)) $(key).value = header[key];
+      });
+
+      const intro = content.intro || {};
+      if (Object.hasOwn(intro, "introEnabled")) $("introEnabled").checked = Boolean(intro.introEnabled);
+      if (Array.isArray(intro.items)) {
+        $("introItems").innerHTML = "";
+        intro.items.forEach((item) => addIntroItem(item));
+        renumberItems($("introItems"));
+      }
+
+      const speakers = content.speakers || {};
+      if (Object.hasOwn(speakers, "contentMode")) $("contentMode").value = speakers.contentMode;
+      if (Object.hasOwn(speakers, "unknownSpeakerMode")) $("unknownSpeakerMode").value = speakers.unknownSpeakerMode;
+      if (Array.isArray(speakers.rules)) {
+        $("speakerRules").innerHTML = "";
+        speakers.rules.forEach((rule) => addSpeakerRule(rule));
+        renumberItems($("speakerRules"));
+      }
+
+      syncContentModeControls();
+      syncHeaderImageControls();
+      syncHeaderModelControls();
+      render();
+      if (!options.skipLocalSave) saveContentToLocal();
+    };
+
+    const exportContentJson = () => {
+      $("contentJson").value = JSON.stringify(currentContentPayload(), null, 2);
+      setStatus("콘텐츠 설정을 JSON으로 내보냈습니다.");
+    };
+
+    const importContentJson = () => {
+      try {
+        const parsed = JSON.parse($("contentJson").value);
+        const content = parsed.content || parsed.values || parsed;
+        if (!content || typeof content !== "object") throw new Error("content");
+        if (parsed.name) $("customContentName").value = parsed.name;
+        applyContentValues(content);
+        setStatus("콘텐츠 설정을 적용했습니다.");
+      } catch {
+        setStatus("콘텐츠 JSON 형식을 확인해 주세요.");
+      }
+    };
+
+    const downloadContentFile = () => {
+      exportContentJson();
+      const blob = new Blob([$("contentJson").value], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const fileName = ($("customContentName").value.trim() || "loglace-content")
+        .replace(/[\\/:*?"<>|]+/g, "-")
+        .replace(/\s+/g, "-")
+        .toLowerCase();
+      link.href = url;
+      link.download = `${fileName}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      setStatus("콘텐츠 설정 파일을 저장했습니다.");
+    };
+
+    const loadContentFile = () => {
+      $("contentFileInput").click();
+    };
+
+    const readContentFile = (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        $("contentJson").value = String(reader.result || "");
+        importContentJson();
+        event.target.value = "";
+      });
+      reader.addEventListener("error", () => {
+        setStatus("콘텐츠 설정 파일을 읽지 못했습니다.");
+        event.target.value = "";
+      });
+      reader.readAsText(file, "utf-8");
+    };
+
     const copyHtml = async () => {
       render();
       try {
@@ -1964,11 +2174,18 @@ ${content}
       if (id === "headerImageUrl") syncHeaderImageControls();
       if (id === "headerModelTag") syncHeaderModelControls();
       if (id === "titleMode" || id === "foldTitleMode") applyTitleModeOverlayPreset();
+      saveContentToLocal();
       render();
     }));
     $("themePreset").addEventListener("change", (event) => applyTheme(event.target.value));
-    $("addIntro").addEventListener("click", () => addIntroItem({ name: "", avatar: "", align: "center", frameColor: $("introImageShadowColor")?.value || "#b99aa4", tags: "", description: "" }));
-    $("addSpeaker").addEventListener("click", () => addSpeakerRule({ capture: "", name: "", side: "left", image: "" }));
+    $("addIntro").addEventListener("click", () => {
+      addIntroItem({ name: "", avatar: "", align: "center", frameColor: $("introImageShadowColor")?.value || "#b99aa4", tags: "", description: "" });
+      saveContentToLocal();
+    });
+    $("addSpeaker").addEventListener("click", () => {
+      addSpeakerRule({ capture: "", name: "", side: "left", image: "" });
+      saveContentToLocal();
+    });
     $("addReplace").addEventListener("click", () => addReplacementRule({ from: "", to: "" }));
     $("addPage").addEventListener("click", () => addPageItem({ title: "", content: "" }));
     $("copyHtml").addEventListener("click", copyHtml);
@@ -1978,7 +2195,15 @@ ${content}
     $("downloadThemeFile").addEventListener("click", downloadThemeFile);
     $("loadThemeFile").addEventListener("click", loadThemeFile);
     $("themeFileInput").addEventListener("change", readThemeFile);
+    $("exportContentJson").addEventListener("click", exportContentJson);
+    $("importContentJson").addEventListener("click", importContentJson);
+    $("downloadContentFile").addEventListener("click", downloadContentFile);
+    $("loadContentFile").addEventListener("click", loadContentFile);
+    $("contentFileInput").addEventListener("change", readContentFile);
+    $("clearLocalContent").addEventListener("click", clearLocalContent);
+    $("customContentName").addEventListener("input", saveContentToLocal);
 
+    loadContentFromLocal();
     syncContentModeControls();
     syncHeaderImageControls();
     syncHeaderModelControls();
